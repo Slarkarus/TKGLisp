@@ -1,25 +1,33 @@
-#ifndef TKG_TYPES_HPP
-#define TKG_TYPES_HPP
+#ifndef TKG_LIST_HPP
+#define TKG_LIST_HPP
 
 namespace tkg
 {
     class Value;
 
-    struct List
+    class List
     {
-        Value *a;
-        Value *b;
+    private:
+        Value *value_;
+        Value *next_;
 
-        List() {}
+    public:
+        List(Value value, Value next);
+    
+        Value get_value();
+
+        Value get_next();
     };
 
-    Value cons(Value a, Value b);
+    Value cons(Value left, Value right);
 
-    Value car(Value a);
+    Value car(Value value);
 
-    Value cdr(Value a);
+    Value cdr(Value value);
 
-    bool isList(Value a);
+    bool isList(Value value);
+
+    extern const Value NIL;
 }
 
-#endif // TKG_TYPES_HPP
+#endif // TKG_LIST_HPP
