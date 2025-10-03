@@ -96,11 +96,6 @@ namespace tkg
             throw std::bad_variant_access();
         }
 
-        List get_as_list() const
-        {
-            return std::get<List>(data_);
-        }
-
         std::string get_as_string();
 
         friend std::ostream &operator<<(std::ostream &output, Value &value)
