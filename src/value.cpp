@@ -2,29 +2,24 @@
 #include "value.hpp"
 namespace tkg
 {
-    std::ostream &Value::print(std::ostream &output)
+    std::string Value::get_as_string()
     {
         switch (type_)
         {
         case ValueType::INTEGER:
-            output << std::get<Integer>(data_);
-            break;
+            return std::get<Integer>(data_).get_as_string();
         case ValueType::STRING:
-            output << "\"" << std::get<std::string>(data_) << "\"";
-            break;
+            return "\"" + std::get<std::string>(data_) + "\"";
         case ValueType::BOOL:
-            output << (std::get<bool>(data_) ? "true" : "false");
-            break;
+            return (std::get<bool>(data_) ? "true" : "false");
         case ValueType::LIST:
-            output << "(" << "TODO: Realize List output" << ")";
-            break;
+            return  "(TODO: Realize List output)";
         case ValueType::NONE:
-            output << "None";
-            break;
+            return "None";
         default:
             break;
         }
-        return output;
+        return "";
     }
 
     const Value None = nullptr;

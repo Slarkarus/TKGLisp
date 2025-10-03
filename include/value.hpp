@@ -93,9 +93,11 @@ namespace tkg
             throw std::bad_variant_access();
         }
 
-        std::ostream &print(std::ostream &output);
+        std::string get_as_string();
 
-        friend std::ostream &operator<<(std::ostream &output, Value &value) { return value.print(output); }
+        friend std::ostream &operator<<(std::ostream &output, Value &value) { 
+            return output << value.get_as_string(); 
+        }
     };
 
     extern const Value None;
