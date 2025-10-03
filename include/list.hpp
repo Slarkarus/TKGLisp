@@ -1,6 +1,8 @@
 #ifndef TKG_LIST_HPP
 #define TKG_LIST_HPP
 
+#include <memory>
+
 namespace tkg
 {
     class Value;
@@ -8,11 +10,11 @@ namespace tkg
     class List
     {
     private:
-        Value *value_;
-        Value *next_;
+        std::shared_ptr<Value> value_;
+        std::shared_ptr<Value> next_;
 
     public:
-        List(Value value, Value next);
+        List(std::shared_ptr<Value> value, std::shared_ptr<Value> next);
 
         Value get_value();
 
@@ -25,9 +27,7 @@ namespace tkg
 
     Value cdr(Value value);
 
-    bool isList(Value value);
-
-    extern const Value NIL;
+    bool is_list(Value value);
 }
 
 #endif // TKG_LIST_HPP

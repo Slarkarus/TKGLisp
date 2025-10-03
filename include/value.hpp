@@ -9,6 +9,24 @@
 
 namespace tkg
 {
+    namespace detail
+    {
+        // Тип к которому приводится тип, который передаётся в ValueTemplate
+        template <typename T>
+        using StoredType =
+            std::conditional_t<std::is_convertible_v<std::decay_t<T>, Integer> && !std::is_same_v<std::decay_t<T>, bool>, Integer,
+                               std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string, std::decay_t<T>>>;
+
+        // Типы, только для которых возможно создание ValueTemplate
+        template <typename T>
+        concept AllowedValueType =
+            std::same_as<T, Integer> ||
+            std::same_as<T, std::string> ||
+            std::same_as<T, bool> ||
+            std::same_as<T, List> ||
+            std::same_as<T, std::nullptr_t>;
+    }
+
     enum ValueType
     {
         INTEGER,
@@ -17,21 +35,6 @@ namespace tkg
         LIST,
         NONE
     };
-
-    // Тип к которому приводится тип, который передаётся в ValueTemplate
-    template <typename T>
-    using StoredType =
-        std::conditional_t<std::is_convertible_v<std::decay_t<T>, Integer> && !std::is_same_v<std::decay_t<T>, bool>, Integer,
-                           std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string, std::decay_t<T>>>;
-
-    // Типы, только для которых возможно создание ValueTemplate
-    template <typename T>
-    concept AllowedValueType =
-        std::same_as<T, Integer> ||
-        std::same_as<T, std::string> ||
-        std::same_as<T, bool> ||
-        std::same_as<T, List> ||
-        std::same_as<T, std::nullptr_t>;
 
     class Value
     {
@@ -48,9 +51,9 @@ namespace tkg
             requires(!std::same_as<std::decay_t<T>, Value>)
         Value(T &&value_)
         {
-            using Stored = StoredType<T>;
+            using Stored = detail::StoredType<T>;
 
-            static_assert(AllowedValueType<Stored>,
+            static_assert(detail::AllowedValueType<Stored>,
                           "Value type must be Integer or std::string or ConsList or bool or nullptr");
 
             if constexpr (std::same_as<Stored, Integer>)
@@ -81,10 +84,10 @@ namespace tkg
         }
 
         template <typename T>
-        const StoredType<T> &get_as_raw() const
+        const detail::StoredType<T> &get_as_raw() const
         {
-            using Stored = StoredType<T>;
-            static_assert(AllowedValueType<Stored>,
+            using Stored = detail::StoredType<T>;
+            static_assert(detail::AllowedValueType<Stored>,
                           "Value type must be Integer or std::string or ConsList or bool or nullptr");
             if (auto ptr = std::get_if<Stored>(&data_))
             {
@@ -93,15 +96,25 @@ namespace tkg
             throw std::bad_variant_access();
         }
 
+        List get_as_list() const
+        {
+            return std::get<List>(data_);
+        }
+
         std::string get_as_string();
 
         friend std::ostream &operator<<(std::ostream &output, Value &value)
         {
             return output << value.get_as_string();
         }
+
+        bool is_same_type(ValueType type);
     };
 
+    bool is_nil(Value value);
+
     extern const Value None;
+    extern const Value NIL;
 }
 
 #endif // TKG_VALUE_HPP

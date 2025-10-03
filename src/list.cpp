@@ -1,15 +1,12 @@
 #include "list.hpp"
 #include "value.hpp"
 
+#include <memory>
+
 namespace tkg
 {
-    const Value NIL = List(None, None);
-
-    List::List(Value value, Value next)
-    {
-        value_ = &value;
-        next_ = &next;
-    }
+    List::List(std::shared_ptr<Value> value, std::shared_ptr<Value> next)
+        : value_(value), next_(next) {}
 
     Value List::get_value()
     {
@@ -23,7 +20,7 @@ namespace tkg
 
     Value cons(Value left, Value right)
     {
-        return List(left, right);
+        return List(std::make_shared<Value>(left), std::make_shared<Value>(right));
     }
 
     Value car(Value value)
@@ -38,4 +35,8 @@ namespace tkg
         return list.get_next();
     }
 
+    bool is_list(Value value)
+    {
+        return value.is_same_type(ValueType::LIST);
+    }
 }
