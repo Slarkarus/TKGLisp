@@ -1,7 +1,8 @@
-#include <vector>
-
 #ifndef TKG_INTEGER_HPP
 #define TKG_INTEGER_HPP
+
+#include <iostream>
+#include <vector>
 
 namespace tkg
 {
