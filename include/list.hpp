@@ -13,7 +13,7 @@ namespace tkg
 
     public:
         List(Value value, Value next);
-    
+
         Value get_value();
 
         Value get_next();

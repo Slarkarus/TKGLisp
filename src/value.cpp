@@ -13,7 +13,7 @@ namespace tkg
         case ValueType::BOOL:
             return (std::get<bool>(data_) ? "true" : "false");
         case ValueType::LIST:
-            return  "(TODO: Realize List output)";
+            return "(TODO: Realize List output)";
         case ValueType::NONE:
             return "None";
         default:

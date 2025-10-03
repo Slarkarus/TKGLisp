@@ -95,8 +95,9 @@ namespace tkg
 
         std::string get_as_string();
 
-        friend std::ostream &operator<<(std::ostream &output, Value &value) { 
-            return output << value.get_as_string(); 
+        friend std::ostream &operator<<(std::ostream &output, Value &value)
+        {
+            return output << value.get_as_string();
         }
     };
 

@@ -4,7 +4,8 @@
 
 using namespace tkg;
 
-int main(){
+int main()
+{
     StoredType<int> x;
     Value a = 4294967299;
     Value b = "Vasya Petrov";
