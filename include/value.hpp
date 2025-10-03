@@ -1,16 +1,14 @@
+#ifndef TKG_VALUE_HPP
+#define TKG_VALUE_HPP
+
 #include <type_traits>
 #include <string>
 #include <variant>
 #include "integer.hpp"
 #include "list.hpp"
 
-#ifndef TKG_VALUE_HPP
-#define TKG_VALUE_HPP
-
 namespace tkg
 {
-    struct List;
-
     enum ValueType
     {
         INTEGER,
@@ -82,12 +80,25 @@ namespace tkg
             }
         }
 
+        template <typename T>
+        const StoredType<T> &get_as_raw() const
+        {
+            using Stored = StoredType<T>;
+            static_assert(AllowedValueType<Stored>,
+                          "Value type must be Integer or std::string or ConsList or bool or nullptr");
+            if (auto ptr = std::get_if<Stored>(&data_))
+            {
+                return *ptr;
+            }
+            throw std::bad_variant_access();
+        }
+
         std::ostream &print(std::ostream &output);
 
         friend std::ostream &operator<<(std::ostream &output, Value &value) { return value.print(output); }
     };
 
-#define None nullptr;
+    extern const Value None;
 }
 
 #endif // TKG_VALUE_HPP
