@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <string>
 #include <variant>
+
 #include "integer.hpp"
 #include "list.hpp"
 
@@ -105,6 +106,13 @@ namespace tkg
 
         bool is_same_type(ValueType type);
     };
+
+    template <typename T1, typename T2>
+    Value cons(T1 &&left, T2 &&right)
+    {
+        return List(std::make_shared<Value>(std::forward<T1>(left)),
+                    std::make_shared<Value>(std::forward<T2>(right)));
+    }
 
     bool is_nil(Value value);
 

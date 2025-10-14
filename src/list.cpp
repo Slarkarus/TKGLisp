@@ -18,11 +18,6 @@ namespace tkg
         return *next_;
     }
 
-    Value cons(Value left, Value right)
-    {
-        return List(std::make_shared<Value>(left), std::make_shared<Value>(right));
-    }
-
     Value car(Value value)
     {
         List list = value.get_as_raw<List>();

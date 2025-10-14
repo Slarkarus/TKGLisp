@@ -21,8 +21,6 @@ namespace tkg
         Value get_next();
     };
 
-    Value cons(Value left, Value right);
-
     Value car(Value value);
 
     Value cdr(Value value);
