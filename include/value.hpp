@@ -28,13 +28,14 @@ namespace tkg
             std::same_as<T, std::nullptr_t>;
     }
 
-    enum ValueType
+    enum class ValueType : uint_fast8_t
     {
-        INTEGER,
-        STRING,
-        BOOL,
-        LIST,
-        NONE
+        Integer,
+        Double,
+        String,
+        Bool,
+        List,
+        None
     };
 
     class Value
@@ -44,9 +45,9 @@ namespace tkg
         std::variant<std::monostate, Integer, std::string, bool, List> data_;
 
     public:
-        Value() : type_(ValueType::NONE), data_(std::monostate{}) {}
+        Value() : type_(ValueType::None), data_(std::monostate{}) {}
 
-        Value(std::nullptr_t) : type_(ValueType::NONE), data_(std::monostate{}) {}
+        Value(std::nullptr_t) : type_(ValueType::None), data_(std::monostate{}) {}
 
         template <typename T>
             requires(!std::same_as<std::decay_t<T>, Value>)
@@ -59,27 +60,27 @@ namespace tkg
 
             if constexpr (std::same_as<Stored, Integer>)
             {
-                type_ = ValueType::INTEGER;
+                type_ = ValueType::Integer;
                 data_ = Integer(value_);
             }
             else if constexpr (std::same_as<Stored, std::string>)
             {
-                type_ = ValueType::STRING;
+                type_ = ValueType::String;
                 data_ = std::string(value_);
             }
             else if constexpr (std::same_as<Stored, bool>)
             {
-                type_ = ValueType::BOOL;
+                type_ = ValueType::Bool;
                 data_ = value_;
             }
             else if constexpr (std::same_as<Stored, List>)
             {
-                type_ = ValueType::LIST;
+                type_ = ValueType::List;
                 data_ = value_;
             }
             else if constexpr (std::same_as<Stored, std::nullptr_t>)
             {
-                type_ = ValueType::NONE;
+                type_ = ValueType::None;
                 data_ = std::monostate{};
             }
         }

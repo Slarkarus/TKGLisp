@@ -1,7 +1,7 @@
+#include <memory>
+
 #include "list.hpp"
 #include "value.hpp"
-
-#include <memory>
 
 namespace tkg
 {
@@ -32,6 +32,6 @@ namespace tkg
 
     bool is_list(Value value)
     {
-        return value.is_same_type(ValueType::LIST);
+        return value.is_same_type(ValueType::List);
     }
 }
