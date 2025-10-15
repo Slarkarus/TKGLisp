@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "magic_enum.hpp"
+
 #include "repl.hpp"
 #include "value.hpp"
 #include "parser.hpp"
@@ -8,6 +10,8 @@
 std::string read()
 {
     std::string result;
+
+    std::cout << ">>> ";
 
     std::getline(std::cin, result);
 
@@ -24,6 +28,26 @@ void print(tkg::Value output)
     std::cout << output;
 }
 
+template <typename T>
+void print_error(T error, std::string line, std::pair<uint32_t, uint32_t> pos)
+{
+    std::cout << "Error on line: " << pos.first << ", column: " << pos.second << '\n';
+    std::cout << "Line: " << line << '\n';
+    std::cout << "      ";
+    
+    for (int i = 1; i < pos.second; ++i)
+        std::cout << '^';
+    
+
+    std::cout << '#';
+    
+    for (int i = pos.second + 1; i <= line.size(); ++i)
+        std::cout << "^";
+    
+    std::cout << '\n';
+    std::cout << magic_enum::enum_type_name<T>() << ": " << magic_enum::enum_name(error) << '\n';
+}
+
 void tkg::repl()
 {
     std::string s;
@@ -33,45 +57,20 @@ void tkg::repl()
         // Read
         std::string s = read();
         Parser parser(s);
+
         Value input = parser.parse();
 
         ParserState current_state = parser.get_current_state();
-        switch (current_state)
+        if (current_state != ParserState::Done)
         {
-        case ParserState::Done:
-            break;
-        case ParserState::Empty:
-            std::cout << "Empty\n";
-            break;
-        case ParserState::Error:
-        {
-            ParserError current_error = parser.get_current_error();
-            switch (current_error)
+            std::cout << "ParserState: " << magic_enum::enum_name(current_state) << '\n';
+
+            if (current_state == ParserState::Error)
             {
-            case ParserError::MissingGlobalLeftBracket:
-                std::cout << "mglb\n";
-                break;
-            case ParserError::MissingLeftBracket:
-                std::cout << "mlb\n";
-                break;
-            case ParserError::MissingRightBracket:
-                std::cout << "mrb\n";
-                break;
-            case ParserError::MissingSecondDoubleQuote:
-                std::cout << "msdq\n";
-                break;
-            case ParserError::MissingSecondSemilicon:
-                std::cout << "mss\n";
-                break;
+                print_error<ParserError>(parser.get_current_error(), parser.get_current_line(), parser.get_current_position());
             }
-            std::cout << "Error\n";
-            break;
-        }
-        case ParserState::Processing:
-            std::cout << "Processing\n";
-            break;
-        default:
-            break;
+
+            continue;
         }
 
         // Evaluate
