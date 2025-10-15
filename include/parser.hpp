@@ -4,11 +4,12 @@
 #include <string>
 #include <stack>
 #include <vector>
+
 #include "value.hpp"
 
 namespace tkg
 {
-    enum class ParserState : int_fast8_t
+    enum class ParserState : uint_fast8_t
     {
         Empty,
         Processing,
@@ -16,14 +17,13 @@ namespace tkg
         Done
     };
 
-    enum class ParserError : int_fast8_t
+    enum class ParserError : uint_fast8_t
     {
-        UndefinedBehaviour,
         MissingLeftBracket,
         MissingRightBracket,
         MissingSecondDoubleQuote,
         MissingSecondSemilicon,
-        UndefinedSymbol
+        MissingGlobalLeftBracket
     };
 
     class Parser
@@ -33,7 +33,8 @@ namespace tkg
         std::string &input_;
         ParserState current_state_;
         ParserError current_error_;
-        std::stack <std::vector <Value>> values_;
+        std::stack<std::vector<Value>> values_;
+        Value extracted_value_;
 
         void skip_empty();
 
@@ -50,13 +51,31 @@ namespace tkg
 
         void append_value(Value &&x);
 
+        void extract_value_from_stack();
+
+        Value parse_value_from_substring(uint32_t begin, uint32_t end);
+
     public:
         ParserState get_current_state()
         {
             return current_state_;
         }
 
-        Parser(std::string &input) : input_(input), offset_(0) {}
+        ParserError get_current_error()
+        {
+            return current_error_;
+        }
+
+        // Return current line number and column number (by offset)
+        std::pair<uint32_t, uint32_t> get_current_position();
+
+        // Return current line (by offset)
+        std::string get_current_line();
+
+        Parser(std::string &input) : input_(input), offset_(0)
+        {
+            extracted_value_ = None;
+        }
 
         Value parse();
     };
