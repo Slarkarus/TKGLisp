@@ -54,6 +54,8 @@ namespace tkg
         }
         case ValueType::None:
             return "";
+        case ValueType::Token:
+            return std::get<Token>(data_).get_name();
         default:
             break;
         }

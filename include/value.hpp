@@ -10,6 +10,23 @@
 
 namespace tkg
 {
+
+    class Token
+    {
+    private:
+        std::string name_;
+
+    public:
+        Token(const std::string &name) : name_(name) {}
+
+        Token(std::string &&name) : name_(std::move(name)) {}
+
+        const std::string &get_name()
+        {
+            return name_;
+        }
+    };
+
     namespace detail
     {
         // Тип к которому приводится тип, который передаётся в ValueTemplate
@@ -25,7 +42,8 @@ namespace tkg
             std::same_as<T, std::string> ||
             std::same_as<T, bool> ||
             std::same_as<T, List> ||
-            std::same_as<T, std::nullptr_t>;
+            std::same_as<T, std::nullptr_t> ||
+            std::same_as<T, Token>;
     }
 
     enum class ValueType : uint_fast8_t
@@ -35,14 +53,15 @@ namespace tkg
         String,
         Bool,
         List,
-        None
+        None,
+        Token
     };
 
     class Value
     {
     private:
         ValueType type_;
-        std::variant<std::monostate, Integer, std::string, bool, List> data_;
+        std::variant<std::monostate, Integer, std::string, bool, List, Token> data_;
 
     public:
         Value() : type_(ValueType::None), data_(std::monostate{}) {}
@@ -56,7 +75,7 @@ namespace tkg
             using Stored = detail::StoredType<T>;
 
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr");
+                          "Value type must be Integer or std::string or ConsList or bool or nullptr or Token");
 
             if constexpr (std::same_as<Stored, Integer>)
             {
@@ -83,6 +102,11 @@ namespace tkg
                 type_ = ValueType::None;
                 data_ = std::monostate{};
             }
+            else if constexpr (std::same_as<Stored, Token>)
+            {
+                type_ = ValueType::Token;
+                data_ = value_;
+            }
         }
 
         template <typename T>
@@ -90,7 +114,7 @@ namespace tkg
         {
             using Stored = detail::StoredType<T>;
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr");
+                          "Value type must be Integer or std::string or ConsList or bool or nullptr or Token");
             if (auto ptr = std::get_if<Stored>(&data_))
             {
                 return *ptr;
