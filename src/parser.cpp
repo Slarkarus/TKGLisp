@@ -130,6 +130,47 @@ namespace tkg
         values_.top().push_back(x);
     }
 
+    std::string Parser::get_current_line()
+    {
+        uint32_t left = offset_;
+        uint32_t right = offset_;
+
+        while (left > 0 && input_[left] != '\n')
+            left--;
+
+        if (input_[left] == '\n')
+            left++;
+
+        std::size_t size = input_.size();
+
+        while (right < size && input_[right] != '\n')
+            right++;
+
+        right--;
+
+        return input_.substr(left, right - left + 1);
+    }
+
+    std::pair<uint32_t, uint32_t> Parser::get_current_position()
+    {
+        uint32_t column = 1;
+        uint32_t line = 1;
+        uint32_t temporary_offset = 0;
+
+        while (temporary_offset < offset_)
+        {
+            if (input_[temporary_offset] == '\n')
+            {
+                column = 0;
+                line++;
+            }
+            temporary_offset++;
+            column++;
+        }
+
+        return std::pair<uint32_t, uint32_t>(line, column);
+    }
+
     Value Parser::parse_value_from_substring(uint32_t begin, uint32_t end)
     {
         bool is_only_digits = true;
