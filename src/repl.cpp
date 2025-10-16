@@ -35,6 +35,13 @@ void tkg::repl()
     {
         // Read
         std::string s = read();
+
+        if (std::cin.eof())
+        {
+            std::cout << "\nThanks for using TKGLisp!";
+            break;
+        }
+
         Parser parser(s);
 
         Value input = parser.parse();
