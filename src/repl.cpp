@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "magic_enum.hpp"
-
+#include "string_utils.hpp"
 #include "repl.hpp"
 #include "value.hpp"
 #include "parser.hpp"
@@ -28,26 +27,6 @@ void print(tkg::Value output)
     std::cout << output;
 }
 
-template <typename T>
-void print_error(T error, std::string line, std::pair<uint32_t, uint32_t> pos)
-{
-    std::cout << "Error on line: " << pos.first << ", column: " << pos.second << '\n';
-    std::cout << "Line: " << line << '\n';
-    std::cout << "      ";
-    
-    for (int i = 1; i < pos.second; ++i)
-        std::cout << '^';
-    
-
-    std::cout << '#';
-    
-    for (int i = pos.second + 1; i <= line.size(); ++i)
-        std::cout << "^";
-    
-    std::cout << '\n';
-    std::cout << magic_enum::enum_type_name<T>() << ": " << magic_enum::enum_name(error) << '\n';
-}
-
 void tkg::repl()
 {
     std::string s;
@@ -67,7 +46,10 @@ void tkg::repl()
 
             if (current_state == ParserState::Error)
             {
-                print_error<ParserError>(parser.get_current_error(), parser.get_current_line(), parser.get_current_position());
+                print_error<ParserError>(
+                    parser.get_current_error(),
+                    get_current_line(parser.get_input(), parser.get_offset()),
+                    get_current_position(parser.get_input(), parser.get_offset()));
             }
 
             continue;

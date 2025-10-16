@@ -16,7 +16,7 @@ namespace tkg
             {
             case '"':
             {
-                uint32_t begin = offset_;
+                StringOffset begin = offset_;
                 if (!skip_for_symbols<'"'>())
                 {
                     return process_error<ParserError::MissingSecondDoubleQuote>();
@@ -62,7 +62,7 @@ namespace tkg
                 {
                     return process_error<ParserError::MissingGlobalLeftBracket>();
                 }
-                uint32_t begin = offset_;
+                StringOffset begin = offset_;
                 // This line is reachable only after skip_empty
                 // And if input_[offset_] symbol isn't space, bracket, or semilicon
                 skip_for_symbols<' ', ')', '(', '\n', '\0', ';'>();
@@ -130,52 +130,11 @@ namespace tkg
         values_.top().push_back(x);
     }
 
-    std::string Parser::get_current_line()
-    {
-        uint32_t left = offset_;
-        uint32_t right = offset_;
-
-        while (left > 0 && input_[left] != '\n')
-            left--;
-
-        if (input_[left] == '\n')
-            left++;
-
-        std::size_t size = input_.size();
-
-        while (right < size && input_[right] != '\n')
-            right++;
-
-        right--;
-
-        return input_.substr(left, right - left + 1);
-    }
-
-    std::pair<uint32_t, uint32_t> Parser::get_current_position()
-    {
-        uint32_t column = 1;
-        uint32_t line = 1;
-        uint32_t temporary_offset = 0;
-
-        while (temporary_offset < offset_)
-        {
-            if (input_[temporary_offset] == '\n')
-            {
-                column = 0;
-                line++;
-            }
-            temporary_offset++;
-            column++;
-        }
-
-        return std::pair<uint32_t, uint32_t>(line, column);
-    }
-
-    Value Parser::parse_value_from_substring(uint32_t begin, uint32_t end)
+    Value Parser::parse_value_from_substring(StringOffset begin, StringOffset end)
     {
         bool is_only_digits = true;
 
-        for (uint32_t i = begin; i <= end; ++i)
+        for (StringOffset i = begin; i <= end; ++i)
         {
             if (!('0' <= input_[i] && input_[i] <= '9'))
             {

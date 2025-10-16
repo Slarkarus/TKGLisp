@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 
+#include "string_utils.hpp"
 #include "value.hpp"
 
 namespace tkg
@@ -29,7 +30,7 @@ namespace tkg
     class Parser
     {
     private:
-        uint32_t offset_;
+        StringOffset offset_;
         std::string &input_;
         ParserState current_state_;
         ParserError current_error_;
@@ -53,9 +54,19 @@ namespace tkg
 
         void extract_value_from_stack();
 
-        Value parse_value_from_substring(uint32_t begin, uint32_t end);
+        Value parse_value_from_substring(StringOffset begin, StringOffset end);
 
     public:
+        const StringOffset get_offset()
+        {
+            return offset_;
+        }
+
+        const std::string &get_input()
+        {
+            return input_;
+        }
+
         ParserState get_current_state()
         {
             return current_state_;
@@ -65,12 +76,6 @@ namespace tkg
         {
             return current_error_;
         }
-
-        // Return current line number and column number (by offset)
-        std::pair<uint32_t, uint32_t> get_current_position();
-
-        // Return current line (by offset)
-        std::string get_current_line();
 
         Parser(std::string &input) : input_(input), offset_(0)
         {
