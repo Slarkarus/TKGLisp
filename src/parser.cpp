@@ -132,21 +132,35 @@ namespace tkg
 
     Value Parser::parse_value_from_substring(StringOffset begin, StringOffset end)
     {
-        bool is_only_digits = true;
+        bool integer_or_double = true;
+        bool has_dot = false;
 
         for (StringOffset i = begin; i <= end; ++i)
         {
-            if (!('0' <= input_[i] && input_[i] <= '9'))
+            if (input_[i] == '.')
             {
-                is_only_digits = false;
+                has_dot = !has_dot;
+                if (!has_dot)
+                {
+                    integer_or_double = false;
+                    break;
+                }
+            }
+            else if (!('0' <= input_[i] && input_[i] <= '9'))
+            {
+                integer_or_double = false;
                 break;
             }
         }
 
         std::string substr = input_.substr(begin, end - begin + 1);
 
-        if (is_only_digits)
+        if (integer_or_double)
         {
+            if (has_dot)
+            {
+                return Value(std::stod(substr));
+            }
             return Value(std::stoll(substr));
         }
 

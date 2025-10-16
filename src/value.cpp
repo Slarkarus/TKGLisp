@@ -11,6 +11,8 @@ namespace tkg
         {
         case ValueType::Integer:
             return std::get<Integer>(data_).get_as_string();
+        case ValueType::Double:
+            return std::to_string(std::get<double>(data_));
         case ValueType::String:
             return "\"" + std::get<std::string>(data_) + "\"";
         case ValueType::Bool:

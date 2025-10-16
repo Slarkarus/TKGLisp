@@ -29,16 +29,18 @@ namespace tkg
 
     namespace detail
     {
-        // Тип к которому приводится тип, который передаётся в ValueTemplate
+        // Тип к которому приводится тип, который передаётся в Value
         template <typename T>
         using StoredType =
             std::conditional_t<std::is_convertible_v<std::decay_t<T>, Integer> && !std::is_same_v<std::decay_t<T>, bool>, Integer,
-                               std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string, std::decay_t<T>>>;
+                               std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string,
+                                                  std::conditional_t<std::is_floating_point_v<std::decay_t<T>>, double, std::decay_t<T>>>>;
 
-        // Типы, только для которых возможно создание ValueTemplate
+        // Типы, только для которых возможно создание Value
         template <typename T>
         concept AllowedValueType =
             std::same_as<T, Integer> ||
+            std::same_as<T, double> ||
             std::same_as<T, std::string> ||
             std::same_as<T, bool> ||
             std::same_as<T, List> ||
@@ -61,7 +63,7 @@ namespace tkg
     {
     private:
         ValueType type_;
-        std::variant<std::monostate, Integer, std::string, bool, List, Token> data_;
+        std::variant<std::monostate, Integer, double, std::string, bool, List, Token> data_;
 
     public:
         Value() : type_(ValueType::None), data_(std::monostate{}) {}
@@ -75,12 +77,17 @@ namespace tkg
             using Stored = detail::StoredType<T>;
 
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr or Token");
+                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
 
             if constexpr (std::same_as<Stored, Integer>)
             {
                 type_ = ValueType::Integer;
                 data_ = Integer(value_);
+            }
+            else if constexpr (std::same_as<Stored, double>)
+            {
+                type_ = ValueType::Double;
+                data_ = value_;
             }
             else if constexpr (std::same_as<Stored, std::string>)
             {
@@ -114,7 +121,7 @@ namespace tkg
         {
             using Stored = detail::StoredType<T>;
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr or Token");
+                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
             if (auto ptr = std::get_if<Stored>(&data_))
             {
                 return *ptr;
