@@ -6,66 +6,68 @@
 #include "value.hpp"
 #include "parser.hpp"
 
-std::string read()
+namespace tkg
 {
-    std::string result;
-
-    std::cout << ">>> ";
-
-    std::getline(std::cin, result);
-
-    return result;
-}
-
-tkg::Value eval(tkg::Value input)
-{
-    return input;
-}
-
-void print(tkg::Value output)
-{
-    std::cout << output;
-}
-
-void tkg::repl()
-{
-    std::string s;
-
-    while (true)
+    namespace detail
     {
-        // Read
-        std::string s = read();
-
-        if (std::cin.eof())
+        void read(std::string &input)
         {
-            std::cout << "\nThanks for using TKGLisp!";
-            break;
+            std::cout << ">>> ";
+
+            std::getline(std::cin, input);
         }
 
-        Parser parser(s);
-
-        Value input = parser.parse();
-
-        ParserState current_state = parser.get_current_state();
-        if (current_state != ParserState::Done)
+        tkg::Value eval(tkg::Value input)
         {
-            std::cout << "ParserState: " << magic_enum::enum_name(current_state) << '\n';
+            return input;
+        }
 
-            if (current_state == ParserState::Error)
+        void print(tkg::Value output)
+        {
+            std::cout << output;
+        }
+    }
+
+    void repl()
+    {
+        while (true)
+        {
+            // Read
+            std::string s;
+
+            detail::read(s);
+
+            if (std::cin.eof())
             {
-                print_error<ParserError>(
-                    parser.get_current_error(),
-                    get_current_line(parser.get_input(), parser.get_offset()),
-                    get_current_position(parser.get_input(), parser.get_offset()));
+                std::cout << "\nThanks for using TKGLisp!";
+                break;
             }
 
-            continue;
+            Parser parser(s);
+
+            Value input = parser.parse();
+
+            ParserState current_state = parser.get_current_state();
+            if (current_state != ParserState::Done)
+            {
+                std::cout << "ParserState: " << magic_enum::enum_name(current_state) << '\n';
+
+                if (current_state == ParserState::Error)
+                {
+                    print_error<ParserError>(
+                        parser.get_current_error(),
+                        get_current_line(parser.get_input(), parser.get_offset()),
+                        get_current_position(parser.get_input(), parser.get_offset()));
+                }
+
+                continue;
+            }
+
+            // Evaluate
+            Value evaluated = detail::eval(input);
+
+            // Print
+            std::cout << evaluated << '\n';
         }
-
-        // Evaluate
-        Value evaluated = eval(input);
-
-        // Print
-        std::cout << evaluated << '\n';
     }
 }

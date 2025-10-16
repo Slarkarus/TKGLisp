@@ -1,8 +1,8 @@
 #ifndef TKG_REPL_HPP
 #define TKG_REPL_HPP
 
-namespace tkg{
-    
+namespace tkg
+{
     void repl();
 }
 
