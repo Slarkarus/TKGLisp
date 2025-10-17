@@ -9,9 +9,16 @@ namespace tkg
     {
         current_state_ = ParserState::Processing;
 
-        while (!is_end())
+        skip_empty();
+        while (!is_eof())
         {
             skip_empty();
+
+            if (is_eof())
+            {
+                break;
+            }
+
             switch (input_[offset_])
             {
             case '"':
@@ -72,6 +79,7 @@ namespace tkg
                     return process_error<ParserError::MissingRightBracket>();
                 }
                 values_.top().push_back(parse_value_from_substring(begin, offset_ - 1));
+                break;
             }
             }
         }
@@ -86,7 +94,7 @@ namespace tkg
 
     inline void Parser::skip_empty()
     {
-        while (!is_end() &&
+        while (!is_eof() &&
                (input_[offset_] == ' ' ||
                 input_[offset_] == '\n' ||
                 input_[offset_] == '\0'))
@@ -101,9 +109,9 @@ namespace tkg
         do
         {
             offset_++;
-        } while (!is_end() && !((input_[offset_] == chars) || ...));
+        } while (!is_eof() && !((input_[offset_] == chars) || ...));
 
-        if (is_end())
+        if (is_eof())
         {
             return false;
         }
@@ -112,7 +120,7 @@ namespace tkg
         return true;
     }
 
-    inline bool Parser::is_end()
+    inline bool Parser::is_eof()
     {
         return offset_ >= input_.size();
     }

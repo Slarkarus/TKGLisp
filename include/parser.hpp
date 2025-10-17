@@ -45,7 +45,7 @@ namespace tkg
         template <char... chars>
         bool skip_for_symbols();
 
-        bool is_end();
+        bool is_eof();
 
         template <ParserError error>
         Value process_error();
