@@ -57,7 +57,7 @@ namespace tkg
         Value parse_value_from_substring(StringOffset begin, StringOffset end);
 
     public:
-        const StringOffset get_offset()
+        StringOffset get_offset()
         {
             return offset_;
         }
@@ -77,7 +77,7 @@ namespace tkg
             return current_error_;
         }
 
-        Parser(std::string &input) : input_(input), offset_(0)
+        Parser(std::string &input) : offset_(0), input_(input)
         {
             extracted_value_ = None;
         }
