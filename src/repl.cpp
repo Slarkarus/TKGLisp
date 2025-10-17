@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "string_utils.hpp"
 #include "repl.hpp"
@@ -26,6 +27,30 @@ namespace tkg
         {
             std::cout << output;
         }
+
+        // Return true on successful file read
+        bool read_file(std::string &result, const std::string &filename)
+        {
+            std::ifstream file(filename);
+
+            if (!file.is_open())
+            {
+                return false;
+            }
+
+            result = "";
+
+            std::string line;
+            while (std::getline(file, line))
+            {
+                result += line;
+                result.push_back('\n');
+            }
+
+            file.close();
+
+            return true;
+        }
     }
 
     void repl()
@@ -39,8 +64,43 @@ namespace tkg
 
             if (std::cin.eof())
             {
-                std::cout << "\nThanks for using TKGLisp!";
+                std::cout << "\nThanks for using TKGLisp!\n";
                 break;
+            }
+
+            if (s[0] == ':')
+            {
+                if (s == ":q")
+                {
+                    std::cout << "Thanks for using TKGLisp!\n";
+                    break;
+                }
+                else if (s.rfind(":l ", 0) == 0)
+                {
+                    std::string filename = s.substr(3);
+
+                    size_t start = filename.find_first_not_of(" \t");
+                    size_t end = filename.find_last_not_of(" \t");
+
+                    if (start == std::string::npos)
+                    {
+                        std::cout << "ReplError: No filename specified after :l\n";
+                        continue;
+                    }
+
+                    filename = filename.substr(start, end - start + 1);
+
+                    if (!detail::read_file(s, filename))
+                    {
+                        std::cout << "ReplError: Can't read file with name: " << filename << '\n';
+                        continue;
+                    }
+                }
+                else
+                {
+                    std::cout << "ReplError: unknown command\n";
+                    continue;
+                }
             }
 
             Parser parser(s);
