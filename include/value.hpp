@@ -4,48 +4,71 @@
 #include <type_traits>
 #include <string>
 #include <variant>
+
 #include "integer.hpp"
 #include "list.hpp"
 
 namespace tkg
 {
+
+    class Token
+    {
+    private:
+        std::string name_;
+
+    public:
+        Token(const std::string &name) : name_(name) {}
+
+        Token(std::string &&name) : name_(std::move(name)) {}
+
+        const std::string &get_name()
+        {
+            return name_;
+        }
+    };
+
     namespace detail
     {
-        // Тип к которому приводится тип, который передаётся в ValueTemplate
+        // Тип к которому приводится тип, который передаётся в Value
         template <typename T>
         using StoredType =
             std::conditional_t<std::is_convertible_v<std::decay_t<T>, Integer> && !std::is_same_v<std::decay_t<T>, bool>, Integer,
-                               std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string, std::decay_t<T>>>;
+                               std::conditional_t<std::is_convertible_v<std::decay_t<T>, std::string>, std::string,
+                                                  std::conditional_t<std::is_floating_point_v<std::decay_t<T>>, double, std::decay_t<T>>>>;
 
-        // Типы, только для которых возможно создание ValueTemplate
+        // Типы, только для которых возможно создание Value
         template <typename T>
         concept AllowedValueType =
             std::same_as<T, Integer> ||
+            std::same_as<T, double> ||
             std::same_as<T, std::string> ||
             std::same_as<T, bool> ||
             std::same_as<T, List> ||
-            std::same_as<T, std::nullptr_t>;
+            std::same_as<T, std::nullptr_t> ||
+            std::same_as<T, Token>;
     }
 
-    enum ValueType
+    enum class ValueType : uint_fast8_t
     {
-        INTEGER,
-        STRING,
-        BOOL,
-        LIST,
-        NONE
+        Integer,
+        Double,
+        String,
+        Bool,
+        List,
+        None,
+        Token
     };
 
     class Value
     {
     private:
         ValueType type_;
-        std::variant<std::monostate, Integer, std::string, bool, List> data_;
+        std::variant<std::monostate, Integer, double, std::string, bool, List, Token> data_;
 
     public:
-        Value() : type_(ValueType::NONE), data_(std::monostate{}) {}
+        Value() : type_(ValueType::None), data_(std::monostate{}) {}
 
-        Value(std::nullptr_t) : type_(ValueType::NONE), data_(std::monostate{}) {}
+        Value(std::nullptr_t) : type_(ValueType::None), data_(std::monostate{}) {}
 
         template <typename T>
             requires(!std::same_as<std::decay_t<T>, Value>)
@@ -54,32 +77,42 @@ namespace tkg
             using Stored = detail::StoredType<T>;
 
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr");
+                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
 
             if constexpr (std::same_as<Stored, Integer>)
             {
-                type_ = ValueType::INTEGER;
+                type_ = ValueType::Integer;
                 data_ = Integer(value_);
+            }
+            else if constexpr (std::same_as<Stored, double>)
+            {
+                type_ = ValueType::Double;
+                data_ = value_;
             }
             else if constexpr (std::same_as<Stored, std::string>)
             {
-                type_ = ValueType::STRING;
+                type_ = ValueType::String;
                 data_ = std::string(value_);
             }
             else if constexpr (std::same_as<Stored, bool>)
             {
-                type_ = ValueType::BOOL;
+                type_ = ValueType::Bool;
                 data_ = value_;
             }
             else if constexpr (std::same_as<Stored, List>)
             {
-                type_ = ValueType::LIST;
+                type_ = ValueType::List;
                 data_ = value_;
             }
             else if constexpr (std::same_as<Stored, std::nullptr_t>)
             {
-                type_ = ValueType::NONE;
+                type_ = ValueType::None;
                 data_ = std::monostate{};
+            }
+            else if constexpr (std::same_as<Stored, Token>)
+            {
+                type_ = ValueType::Token;
+                data_ = value_;
             }
         }
 
@@ -88,7 +121,7 @@ namespace tkg
         {
             using Stored = detail::StoredType<T>;
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or std::string or ConsList or bool or nullptr");
+                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
             if (auto ptr = std::get_if<Stored>(&data_))
             {
                 return *ptr;
@@ -105,6 +138,13 @@ namespace tkg
 
         bool is_same_type(ValueType type);
     };
+
+    template <typename T1, typename T2>
+    Value cons(T1 &&left, T2 &&right)
+    {
+        return List(std::make_shared<Value>(std::forward<T1>(left)),
+                    std::make_shared<Value>(std::forward<T2>(right)));
+    }
 
     bool is_nil(Value value);
 

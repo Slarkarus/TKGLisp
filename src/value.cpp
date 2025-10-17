@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "value.hpp"
 #include "list.hpp"
 
@@ -8,13 +9,15 @@ namespace tkg
     {
         switch (type_)
         {
-        case ValueType::INTEGER:
+        case ValueType::Integer:
             return std::get<Integer>(data_).get_as_string();
-        case ValueType::STRING:
+        case ValueType::Double:
+            return std::to_string(std::get<double>(data_));
+        case ValueType::String:
             return "\"" + std::get<std::string>(data_) + "\"";
-        case ValueType::BOOL:
+        case ValueType::Bool:
             return (std::get<bool>(data_) ? "true" : "false");
-        case ValueType::LIST:
+        case ValueType::List:
         {
             std::string result = "";
             Value cur_value = *this;
@@ -42,7 +45,7 @@ namespace tkg
                 cur_value = cur_list.get_next();
             }
 
-            if (!is_nil(cur_value) && !cur_value.is_same_type(ValueType::NONE))
+            if (!is_nil(cur_value) && !cur_value.is_same_type(ValueType::None))
             {
                 if (!first)
                     result += " ";
@@ -51,8 +54,10 @@ namespace tkg
 
             return "(" + result + ")";
         }
-        case ValueType::NONE:
+        case ValueType::None:
             return "";
+        case ValueType::Token:
+            return std::get<Token>(data_).get_name();
         default:
             break;
         }
@@ -66,13 +71,14 @@ namespace tkg
 
     bool is_nil(Value value)
     {
-        if (!value.is_same_type(ValueType::LIST))
+        if (!value.is_same_type(ValueType::List))
         {
             return false;
         }
         List list = value.get_as_raw<List>();
 
-        return list.get_value().is_same_type(ValueType::NONE) && list.get_next().is_same_type(ValueType::NONE);
+        return list.get_value().is_same_type(ValueType::None) &&
+               list.get_next().is_same_type(ValueType::None);
     }
 
     const Value None = nullptr;

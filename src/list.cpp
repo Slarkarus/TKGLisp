@@ -1,7 +1,7 @@
+#include <memory>
+
 #include "list.hpp"
 #include "value.hpp"
-
-#include <memory>
 
 namespace tkg
 {
@@ -18,11 +18,6 @@ namespace tkg
         return *next_;
     }
 
-    Value cons(Value left, Value right)
-    {
-        return List(std::make_shared<Value>(left), std::make_shared<Value>(right));
-    }
-
     Value car(Value value)
     {
         List list = value.get_as_raw<List>();
@@ -37,6 +32,6 @@ namespace tkg
 
     bool is_list(Value value)
     {
-        return value.is_same_type(ValueType::LIST);
+        return value.is_same_type(ValueType::List);
     }
 }
