@@ -4,11 +4,19 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
+#include <type_traits>
+#include <algorithm>
 
 #include "magic_enum.hpp"
 
 namespace tkg
 {
+    namespace detail
+    {
+        template <typename T>
+        concept EnumType = std::is_enum_v<T>;
+    }
+
     using StringOffset = uint32_t;
     using StringPosition = std::pair<StringOffset, StringOffset>;
 
@@ -55,7 +63,7 @@ namespace tkg
         return input.substr(left, right - left + 1);
     }
 
-    template <typename T>
+    template <detail::EnumType T>
     void print_error(T error, std::string line, StringPosition pos)
     {
         std::cout << "Error on line: " << pos.first << ", column: " << pos.second << '\n';
@@ -72,6 +80,16 @@ namespace tkg
 
         std::cout << '\n';
         std::cout << magic_enum::enum_type_name<T>() << ": " << magic_enum::enum_name(error) << '\n';
+    }
+
+    template <detail::EnumType T>
+    consteval std::string enum_to_lower_string(T enum_element)
+    {
+        std::string result = static_cast<std::string>(magic_enum::enum_name(enum_element));
+
+        std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c)
+                       { return std::tolower(c); });
+        return result;
     }
 }
 
