@@ -9,7 +9,7 @@
 #include "binary_predicate.hpp"
 #include "special_form.hpp"
 #include "integer.hpp"
-#include "value/list.hpp"
+#include "list.hpp"
 
 namespace tkg
 {
