@@ -1,10 +1,13 @@
-#ifndef TKG_VALUE_HPP
-#define TKG_VALUE_HPP
+#ifndef TKG_VALUE_VALUE_HPP
+#define TKG_VALUE_VALUE_HPP
 
 #include <type_traits>
 #include <string>
 #include <variant>
 
+#include "binary_operation.hpp"
+#include "binary_predicate.hpp"
+#include "special_form.hpp"
 #include "integer.hpp"
 #include "list.hpp"
 
@@ -152,4 +155,4 @@ namespace tkg
     extern const Value NIL;
 }
 
-#endif // TKG_VALUE_HPP
+#endif // TKG_VALUE_VALUE_HPP

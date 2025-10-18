@@ -1,7 +1,7 @@
 #include <string>
 
 #include "parser.hpp"
-#include "value.hpp"
+#include "value/value.hpp"
 
 namespace tkg
 {

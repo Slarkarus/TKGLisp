@@ -4,7 +4,7 @@
 
 #include "string_utils.hpp"
 #include "repl.hpp"
-#include "value.hpp"
+#include "value/value.hpp"
 #include "parser.hpp"
 
 namespace tkg
