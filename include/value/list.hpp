@@ -1,5 +1,5 @@
-#ifndef TKG_LIST_HPP
-#define TKG_LIST_HPP
+#ifndef TKG_VALUE_LIST_HPP
+#define TKG_VALUE_LIST_HPP
 
 #include <memory>
 
@@ -28,4 +28,4 @@ namespace tkg
     bool is_list(Value value);
 }
 
-#endif // TKG_LIST_HPP
+#endif // TKG_VALUE_LIST_HPP
