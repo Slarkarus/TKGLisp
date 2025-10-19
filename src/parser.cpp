@@ -5,11 +5,28 @@
 
 namespace tkg
 {
-    Value Parser::parse()
+
+    void Parser::prepare_for_parsing(std::string &str)
     {
+        current_state_ = ParserState::Empty;
+        input_ = str;
+        offset_ = 0;
+        extracted_value_ = None;
+
+        while (!(values_.empty()))
+        {
+            values_.pop();
+        }
+    }
+
+    Value Parser::parse(std::string &str)
+    {
+        prepare_for_parsing(str);
+
         current_state_ = ParserState::Processing;
 
         skip_empty();
+
         while (!is_eof())
         {
             skip_empty();
@@ -138,6 +155,43 @@ namespace tkg
         values_.top().push_back(x);
     }
 
+    void Parser::fill_keyword_trie()
+    {
+        // BinaryOperation
+        constexpr detail::enum_fast_int binary_operations_count = magic_enum::enum_count<BinaryOperation>();
+        for (size_t i = 0; i < binary_operations_count; ++i)
+        {
+            BinaryOperation op = static_cast<BinaryOperation>(i);
+            Value op_value = Value(op);
+            keyword_trie_.add_string(op_value, op_value.get_as_string());
+        }
+
+        // BinaryPredicate
+        constexpr detail::enum_fast_int binary_predicates_count = magic_enum::enum_count<BinaryPredicate>();
+        for (size_t i = 0; i < binary_predicates_count; ++i)
+        {
+            BinaryPredicate pred = static_cast<BinaryPredicate>(i);
+            Value pred_value = Value(pred);
+            keyword_trie_.add_string(pred_value, pred_value.get_as_string());
+        }
+
+        // SpecialForm
+        constexpr detail::enum_fast_int special_forms_count = magic_enum::enum_count<SpecialForm>();
+        for (size_t i = 0; i < special_forms_count; ++i)
+        {
+            SpecialForm form = static_cast<SpecialForm>(i);
+            Value form_value = Value(form);
+            keyword_trie_.add_string(form_value, form_value.get_as_string());
+        }
+
+        // Bool
+        Value true_value = Value(true);
+        Value false_value = Value(false);
+
+        keyword_trie_.add_string(true_value, true_value.get_as_string());
+        keyword_trie_.add_string(false_value, false_value.get_as_string());
+    }
+
     Value Parser::parse_value_from_substring(StringOffset begin, StringOffset end)
     {
         bool integer_or_double = true;
@@ -172,13 +226,11 @@ namespace tkg
             return Value(std::stoll(substr));
         }
 
-        if (substr == "true")
+        Value value_from_trie = keyword_trie_.get_value(substr);
+
+        if (!value_from_trie.is_same_type(ValueType::None))
         {
-            return Value(true);
-        }
-        else if (substr == "false")
-        {
-            return Value(false);
+            return value_from_trie;
         }
 
         return Value(Token(substr));

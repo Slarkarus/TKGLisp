@@ -55,6 +55,8 @@ namespace tkg
 
     void repl()
     {
+        Parser parser;
+
         while (true)
         {
             // Read
@@ -103,9 +105,7 @@ namespace tkg
                 }
             }
 
-            Parser parser(s);
-
-            Value input = parser.parse();
+            Value input = parser.parse(s);
 
             ParserState current_state = parser.get_current_state();
             if (current_state != ParserState::Done)

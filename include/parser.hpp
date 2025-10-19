@@ -8,6 +8,7 @@
 #include "string_utils.hpp"
 #include "enum_utils.hpp"
 #include "value/value.hpp"
+#include "trie.hpp"
 
 namespace tkg
 {
@@ -32,11 +33,12 @@ namespace tkg
     {
     private:
         StringOffset offset_;
-        std::string &input_;
+        std::string input_;
         ParserState current_state_;
         ParserError current_error_;
         std::stack<std::vector<Value>> values_;
         Value extracted_value_;
+        Trie keyword_trie_;
 
         void skip_empty();
 
@@ -56,6 +58,10 @@ namespace tkg
         void extract_value_from_stack();
 
         Value parse_value_from_substring(StringOffset begin, StringOffset end);
+
+        void fill_keyword_trie();
+
+        void prepare_for_parsing(std::string &str);
 
     public:
         StringOffset get_offset()
@@ -78,12 +84,9 @@ namespace tkg
             return current_error_;
         }
 
-        Parser(std::string &input) : offset_(0), input_(input)
-        {
-            extracted_value_ = None;
-        }
+        Parser() { fill_keyword_trie(); }
 
-        Value parse();
+        Value parse(std::string &str);
     };
 
 }
