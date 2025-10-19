@@ -4,8 +4,11 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
+#include <algorithm>
 
 #include "magic_enum.hpp"
+
+#include "enum_utils.hpp"
 
 namespace tkg
 {
@@ -55,7 +58,7 @@ namespace tkg
         return input.substr(left, right - left + 1);
     }
 
-    template <typename T>
+    template <detail::EnumType T>
     void print_error(T error, std::string line, StringPosition pos)
     {
         std::cout << "Error on line: " << pos.first << ", column: " << pos.second << '\n';

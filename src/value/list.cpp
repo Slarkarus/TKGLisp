@@ -1,7 +1,6 @@
 #include <memory>
 
-#include "list.hpp"
-#include "value.hpp"
+#include "value/value.hpp"
 
 namespace tkg
 {
