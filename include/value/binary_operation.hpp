@@ -1,15 +1,16 @@
 #ifndef TKG_VALUE_BINARY_OPERATION_HPP
 #define TKG_VALUE_BINARY_OPERATION_HPP
 
-#include "string_utils.hpp"
+#include "enum_utils.hpp"
 
 namespace tkg
 {
-    enum class BinaryOperation{
+    enum class BinaryOperation : detail::enum_fast_int
+    {
         Add,
         Sub,
-        Mul, 
-        Div, 
+        Mul,
+        Div,
         Mod,
         StrConcat
     };

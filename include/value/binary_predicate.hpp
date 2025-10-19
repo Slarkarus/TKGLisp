@@ -1,11 +1,11 @@
 #ifndef TKG_VALUE_BINARY_PREDICATE_HPP
 #define TKG_VALUE_BINARY_PREDICATE_HPP
 
-#include "string_utils.hpp"
+#include "enum_utils.hpp"
 
 namespace tkg
 {
-    enum class BinaryPredicate
+    enum class BinaryPredicate : detail::enum_fast_int
     {
         Less,
         Great,

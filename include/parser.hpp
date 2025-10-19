@@ -6,11 +6,12 @@
 #include <vector>
 
 #include "string_utils.hpp"
+#include "enum_utils.hpp"
 #include "value/value.hpp"
 
 namespace tkg
 {
-    enum class ParserState : uint_fast8_t
+    enum class ParserState : detail::enum_fast_int
     {
         Empty,
         Processing,
@@ -18,7 +19,7 @@ namespace tkg
         Done
     };
 
-    enum class ParserError : uint_fast8_t
+    enum class ParserError : detail::enum_fast_int
     {
         MissingLeftBracket,
         MissingRightBracket,

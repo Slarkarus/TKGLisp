@@ -11,6 +11,8 @@
 #include "integer.hpp"
 #include "list.hpp"
 
+#include "enum_utils.hpp"
+
 namespace tkg
 {
 
@@ -51,7 +53,7 @@ namespace tkg
             std::same_as<T, Token>;
     }
 
-    enum class ValueType : uint_fast8_t
+    enum class ValueType : detail::enum_fast_int
     {
         Integer,
         Double,

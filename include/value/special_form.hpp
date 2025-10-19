@@ -1,11 +1,11 @@
 #ifndef TKG_VALUE_SPECIAL_FORM_HPP
 #define TKG_VALUE_SPECIAL_FORM_HPP
 
-#include "string_utils.hpp"
+#include "enum_utils.hpp"
 
 namespace tkg
 {
-    enum class SpecialForm
+    enum class SpecialForm : detail::enum_fast_int
     {
         Quote,
         Eval,
