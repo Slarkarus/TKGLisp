@@ -57,10 +57,16 @@ namespace tkg
             return "";
         case ValueType::Token:
             return std::get<Token>(data_).get_name();
+        case ValueType::BinaryOperation:
+            return keyword_to_string(std::get<BinaryOperation>(data_));
+        case ValueType::BinaryPredicate:
+            return keyword_to_string(std::get<BinaryPredicate>(data_));
+        case ValueType::SpecialForm:
+            return keyword_to_string(std::get<SpecialForm>(data_));
         default:
             break;
         }
-        return "";
+        return nullptr;
     }
 
     bool Value::is_same_type(ValueType type)

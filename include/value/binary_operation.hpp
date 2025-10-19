@@ -1,6 +1,7 @@
 #ifndef TKG_VALUE_BINARY_OPERATION_HPP
 #define TKG_VALUE_BINARY_OPERATION_HPP
 
+#include "string_utils.hpp"
 #include "enum_utils.hpp"
 
 namespace tkg
@@ -15,7 +16,7 @@ namespace tkg
         StrConcat
     };
 
-    consteval std::string keyword_to_string(BinaryOperation operation)
+    constexpr std::string keyword_to_string(BinaryOperation operation)
     {
         switch (operation)
         {
@@ -31,6 +32,8 @@ namespace tkg
             return "_%_";
         case BinaryOperation::StrConcat:
             return "_++_";
+        default:
+            return nullptr;
         }
     }
 }

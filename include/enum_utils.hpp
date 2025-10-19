@@ -18,7 +18,7 @@ namespace tkg
     }
 
     template <detail::EnumType T>
-    consteval std::string enum_to_lower_string(T enum_element)
+    constexpr std::string enum_to_lower_string(T enum_element)
     {
         std::string result = static_cast<std::string>(magic_enum::enum_name(enum_element));
 

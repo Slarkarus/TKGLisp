@@ -14,7 +14,7 @@ namespace tkg
         GreatEqual
     };
 
-    consteval std::string keyword_to_string(BinaryPredicate predicate)
+    constexpr std::string keyword_to_string(BinaryPredicate predicate)
     {
         switch (predicate)
         {
@@ -28,6 +28,8 @@ namespace tkg
             return "<=";
         case BinaryPredicate::GreatEqual:
             return ">=";
+        default:
+            return nullptr;
         }
     }
 }

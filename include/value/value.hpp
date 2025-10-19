@@ -50,7 +50,10 @@ namespace tkg
             std::same_as<T, bool> ||
             std::same_as<T, List> ||
             std::same_as<T, std::nullptr_t> ||
-            std::same_as<T, Token>;
+            std::same_as<T, Token> ||
+            std::same_as<T, BinaryOperation> ||
+            std::same_as<T, BinaryPredicate> ||
+            std::same_as<T, SpecialForm>;
     }
 
     enum class ValueType : detail::enum_fast_int
@@ -61,14 +64,17 @@ namespace tkg
         Bool,
         List,
         None,
-        Token
+        Token,
+        BinaryOperation,
+        BinaryPredicate,
+        SpecialForm
     };
 
     class Value
     {
     private:
         ValueType type_;
-        std::variant<std::monostate, Integer, double, std::string, bool, List, Token> data_;
+        std::variant<std::monostate, Integer, double, std::string, bool, List, Token, BinaryOperation, BinaryPredicate, SpecialForm> data_;
 
     public:
         Value() : type_(ValueType::None), data_(std::monostate{}) {}
@@ -82,7 +88,9 @@ namespace tkg
             using Stored = detail::StoredType<T>;
 
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
+                          "Value type must be Integer or double or std::string or "
+                          "ConsList or bool or nullptr or Token "
+                          "or BinaryOperation or BinaryPredicate or SpecialForm");
 
             if constexpr (std::same_as<Stored, Integer>)
             {
@@ -118,6 +126,26 @@ namespace tkg
             {
                 type_ = ValueType::Token;
                 data_ = value_;
+            }
+            else if constexpr (std::same_as<Stored, BinaryOperation>)
+            {
+                type_ = ValueType::BinaryOperation;
+                data_ = value_;
+            }
+            else if constexpr (std::same_as<Stored, BinaryPredicate>)
+            {
+                type_ = ValueType::BinaryPredicate;
+                data_ = value_;
+            }
+            else if constexpr (std::same_as<Stored, SpecialForm>)
+            {
+                type_ = ValueType::SpecialForm;
+                data_ = value_;
+            }
+            else
+            {
+                static_assert(std::bool_constant<false>::value,
+                              "Unhandled type in Value constructor");
             }
         }
 
