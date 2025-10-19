@@ -154,7 +154,9 @@ namespace tkg
         {
             using Stored = detail::StoredType<T>;
             static_assert(detail::AllowedValueType<Stored>,
-                          "Value type must be Integer or double or std::string or ConsList or bool or nullptr or Token");
+                          "Value type must be Integer or double or std::string or "
+                          "ConsList or bool or nullptr or Token "
+                          "or BinaryOperation or BinaryPredicate or SpecialForm");
             if (auto ptr = std::get_if<Stored>(&data_))
             {
                 return *ptr;
