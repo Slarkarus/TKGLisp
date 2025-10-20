@@ -30,6 +30,11 @@ namespace tkg
         {
             return name_;
         }
+
+        bool operator==(const Token &other) const
+        {
+            return name_ == other.name_;
+        }
     };
 
     namespace detail
@@ -171,7 +176,9 @@ namespace tkg
             return output << value.get_as_string();
         }
 
-        bool is_same_type(ValueType type);
+        bool is_same_type(ValueType type) const noexcept;
+
+        bool operator==(const Value &other) const;
     };
 
     template <typename T1, typename T2>

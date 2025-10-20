@@ -7,14 +7,20 @@ namespace tkg
     List::List(std::shared_ptr<Value> value, std::shared_ptr<Value> next)
         : value_(value), next_(next) {}
 
-    Value List::get_value()
+    Value List::get_value() const
     {
         return *value_;
     }
 
-    Value List::get_next()
+    Value List::get_next() const
     {
         return *next_;
+    }
+
+    bool List::operator==(const List &other) const
+    {
+        return get_value() == other.get_value() &&
+               get_next() == other.get_next();
     }
 
     Value car(Value value)

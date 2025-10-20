@@ -1,6 +1,8 @@
 #include <iostream>
+#include <cmath>
 
 #include "value/value.hpp"
+#include "config.hpp"
 
 namespace tkg
 {
@@ -69,9 +71,37 @@ namespace tkg
         return nullptr;
     }
 
-    bool Value::is_same_type(ValueType type)
+    bool Value::is_same_type(ValueType type) const noexcept
     {
         return type_ == type;
+    }
+
+    bool Value::operator==(const Value &other) const
+    {
+        if (!is_same_type(other.type_))
+        {
+            return false;
+        }
+
+        switch (type_)
+        {
+        case ValueType::Double:
+            return fabs(get_as_raw<double>() - other.get_as_raw<double>()) < DOUBLE_PRECISION;
+        case ValueType::List:
+            return car(*this) == car(other) && cdr(*this) == cdr(other);
+        case ValueType::None:
+            return true;
+        case ValueType::Bool:
+        case ValueType::Integer:
+        case ValueType::String:
+        case ValueType::Token:
+        case ValueType::BinaryOperation:
+        case ValueType::BinaryPredicate:
+        case ValueType::SpecialForm:
+            return data_ == other.data_;
+        }
+
+        return false;
     }
 
     bool is_nil(Value value)

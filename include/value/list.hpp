@@ -16,9 +16,11 @@ namespace tkg
     public:
         List(std::shared_ptr<Value> value, std::shared_ptr<Value> next);
 
-        Value get_value();
+        Value get_value() const;
 
-        Value get_next();
+        Value get_next() const;
+
+        bool operator==(const List &other) const;
     };
 
     Value car(Value value);

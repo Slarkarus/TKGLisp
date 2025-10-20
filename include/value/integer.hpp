@@ -33,6 +33,11 @@ namespace tkg
         {
             return output << value.get_as_string();
         }
+
+        bool operator==(const Integer &other) const
+        {
+            return other.data_ == data_;
+        }
     };
 }
 
