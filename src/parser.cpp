@@ -25,11 +25,11 @@ namespace tkg
 
         current_state_ = ParserState::Processing;
 
-        skip_empty();
+        skip_symbols<' ', ',', '\n', '\0'>();
 
         while (!is_eof())
         {
-            skip_empty();
+            skip_symbols<' ', ',', '\n', '\0'>();
 
             if (is_eof())
             {
@@ -89,7 +89,7 @@ namespace tkg
                 StringOffset begin = offset_;
                 // This line is reachable only after skip_empty
                 // And if input_[offset_] symbol isn't space, bracket, or semilicon
-                skip_for_symbols<' ', ')', '(', '\n', '\0', ';'>();
+                skip_for_symbols<' ', ')', '(', '\n', '\0', ';', ','>();
                 offset_--; // We moved at least 2 character right in line before
                 if (offset_ < begin + 1)
                 {
@@ -109,18 +109,16 @@ namespace tkg
         return extracted_value_;
     }
 
-    inline void Parser::skip_empty()
+    template <Parser::ParserChar... chars>
+    inline void Parser::skip_symbols()
     {
-        while (!is_eof() &&
-               (input_[offset_] == ' ' ||
-                input_[offset_] == '\n' ||
-                input_[offset_] == '\0'))
+        while (!is_eof() && ((input_[offset_] == chars) || ...))
         {
             offset_++;
         }
     }
 
-    template <char... chars>
+    template <Parser::ParserChar... chars>
     inline bool Parser::skip_for_symbols()
     {
         do
@@ -247,5 +245,10 @@ namespace tkg
         }
 
         values_.pop();
+    }
+
+    Parser::Parser()
+    {
+        fill_keyword_trie();
     }
 }

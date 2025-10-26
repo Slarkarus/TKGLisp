@@ -32,6 +32,8 @@ namespace tkg
     class Parser
     {
     private:
+        using ParserChar = unsigned char;
+
         StringOffset offset_;
         std::string input_;
         ParserState current_state_;
@@ -40,12 +42,13 @@ namespace tkg
         Value extracted_value_;
         Trie keyword_trie_;
 
-        void skip_empty();
+        template <ParserChar... chars>
+        void skip_symbols();
 
         // Skip all symbols, after current symbol, while not found semilicon
         // Also skip founded symbol
         // Return false if don't found symbol
-        template <char... chars>
+        template <ParserChar... chars>
         bool skip_for_symbols();
 
         bool is_eof();
@@ -84,7 +87,7 @@ namespace tkg
             return current_error_;
         }
 
-        Parser() { fill_keyword_trie(); }
+        Parser();
 
         Value parse(std::string &str);
     };
