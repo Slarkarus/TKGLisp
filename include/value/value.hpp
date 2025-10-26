@@ -171,6 +171,8 @@ namespace tkg
 
         std::string get_as_string();
 
+        std::string get_as_debug_string();
+
         friend std::ostream &operator<<(std::ostream &output, Value &value)
         {
             return output << value.get_as_string();
@@ -179,6 +181,8 @@ namespace tkg
         bool is_same_type(ValueType type) const noexcept;
 
         bool operator==(const Value &other) const;
+
+        ValueType get_type() const noexcept { return type_; }
     };
 
     template <typename T1, typename T2>

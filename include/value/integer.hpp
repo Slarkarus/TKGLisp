@@ -38,6 +38,33 @@ namespace tkg
         {
             return other.data_ == data_;
         }
+
+        Integer operator+(const Integer &other) const
+        {
+            return data_ + other.data_;
+        }
+
+        Integer operator-(const Integer &other) const
+        {
+            return data_ - other.data_;
+        }
+
+        Integer operator*(const Integer &other) const
+        {
+            return data_ * other.data_;
+        }
+
+        Integer operator/(const Integer &other) const
+        {
+            return data_ / other.data_;
+        }
+
+        Integer operator%(const Integer &other) const
+        {
+            return data_ % other.data_;
+        }
+
+        explicit operator double() const { return (double)data_; }
     };
 }
 
