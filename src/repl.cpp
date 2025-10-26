@@ -6,6 +6,7 @@
 #include "repl.hpp"
 #include "value/value.hpp"
 #include "parser.hpp"
+#include "evaluator.hpp"
 
 namespace tkg
 {
@@ -16,11 +17,6 @@ namespace tkg
             std::cout << ">>> ";
 
             std::getline(std::cin, input);
-        }
-
-        tkg::Value eval(tkg::Value input)
-        {
-            return input;
         }
 
         void print(tkg::Value output)
@@ -56,6 +52,7 @@ namespace tkg
     void repl()
     {
         Parser parser;
+        Evaluator evaluator;
 
         while (true)
         {
@@ -107,12 +104,12 @@ namespace tkg
 
             Value input = parser.parse(s);
 
-            ParserState current_state = parser.get_current_state();
-            if (current_state != ParserState::Done)
+            ParserState parser_state = parser.get_current_state();
+            if (parser_state != ParserState::Done)
             {
-                std::cout << "ParserState: " << magic_enum::enum_name(current_state) << '\n';
+                std::cout << "ParserState: " << magic_enum::enum_name(parser_state) << '\n';
 
-                if (current_state == ParserState::Error)
+                if (parser_state == ParserState::Error)
                 {
                     print_error<ParserError>(
                         parser.get_current_error(),
@@ -124,7 +121,23 @@ namespace tkg
             }
 
             // Evaluate
-            Value evaluated = detail::eval(input);
+            Value evaluated = evaluator.evaluate(input);
+
+            EvaluatorState evaluator_state = evaluator.get_current_state();
+            if (evaluator_state != EvaluatorState::Done)
+            {
+                std::cout << "EvaluatorState: " << magic_enum::enum_name(evaluator_state) << '\n';
+
+                if(evaluator_state == EvaluatorState::Error){
+                    std::string error_line = "undefined line";
+
+                    print_error<EvaluatorError>(
+                        evaluator.get_current_error(),
+                        error_line,
+                        {0, 0}
+                    );
+                }
+            }
 
             // Print
             std::cout << evaluated << '\n';
