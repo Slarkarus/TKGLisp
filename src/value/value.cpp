@@ -3,6 +3,7 @@
 
 #include "value/value.hpp"
 #include "config.hpp"
+#include "magic_enum.hpp"
 
 namespace tkg
 {
@@ -65,10 +66,62 @@ namespace tkg
             return keyword_to_string(std::get<BinaryPredicate>(data_));
         case ValueType::SpecialForm:
             return keyword_to_string(std::get<SpecialForm>(data_));
-        default:
-            break;
         }
-        return nullptr;
+    }
+
+    std::string Value::get_as_debug_string()
+    {
+        switch (type_)
+        {
+        case ValueType::Integer:
+        case ValueType::Double:
+        case ValueType::String:
+        case ValueType::Bool:
+        case ValueType::Token:
+        case ValueType::BinaryOperation:
+        case ValueType::BinaryPredicate:
+        case ValueType::SpecialForm:
+            return static_cast<std::string>(magic_enum::enum_name(type_)) + ":" + get_as_string();
+        case ValueType::List:
+        {
+            std::string result = "";
+            Value cur_value = *this;
+            bool first = true;
+
+            while (is_list(cur_value))
+            {
+                if (is_nil(cur_value))
+                {
+                    break;
+                }
+
+                List cur_list = cur_value.get_as_raw<List>();
+                std::string tmp = cur_list.get_value().get_as_debug_string();
+
+                if (!tmp.empty())
+                {
+                    if (first)
+                        first = false;
+                    else
+                        result += " ";
+                }
+
+                result += tmp;
+                cur_value = cur_list.get_next();
+            }
+
+            if (!is_nil(cur_value) && !cur_value.is_same_type(ValueType::None))
+            {
+                if (!first)
+                    result += " ";
+                result += cur_value.get_as_debug_string();
+            }
+
+            return "List:(" + result + ")";
+        }
+        case ValueType::None:
+            return static_cast<std::string>(magic_enum::enum_name(type_));
+        }
     }
 
     bool Value::is_same_type(ValueType type) const noexcept

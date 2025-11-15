@@ -120,7 +120,12 @@ namespace tkg
                 continue;
             }
 
+            if constexpr(DEBUG){
+                std::cout << input.get_as_debug_string() << '\n';
+            }
+            
             // Evaluate
+            
             Value evaluated = evaluator.evaluate(input);
 
             EvaluatorState evaluator_state = evaluator.get_current_state();

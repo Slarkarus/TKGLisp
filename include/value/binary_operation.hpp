@@ -32,8 +32,6 @@ namespace tkg
             return "_%_";
         case BinaryOperation::StrConcat:
             return "_++_";
-        default:
-            return nullptr;
         }
     }
 }

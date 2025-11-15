@@ -28,8 +28,6 @@ namespace tkg
             return "<=";
         case BinaryPredicate::GreatEqual:
             return ">=";
-        default:
-            return nullptr;
         }
     }
 }

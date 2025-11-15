@@ -9,6 +9,8 @@ namespace tkg
     {
         return right - left * ((int)(right / left));
     }
+
+    const bool DEBUG = true;
 }
 
 #endif // TKG_CONFIG_HPP
