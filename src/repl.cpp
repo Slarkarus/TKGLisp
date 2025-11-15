@@ -120,12 +120,13 @@ namespace tkg
                 continue;
             }
 
-            if constexpr(DEBUG){
+            if constexpr (DEBUG)
+            {
                 std::cout << input.get_as_debug_string() << '\n';
             }
-            
+
             // Evaluate
-            
+
             Value evaluated = evaluator.evaluate(input);
 
             EvaluatorState evaluator_state = evaluator.get_current_state();
@@ -133,14 +134,14 @@ namespace tkg
             {
                 std::cout << "EvaluatorState: " << magic_enum::enum_name(evaluator_state) << '\n';
 
-                if(evaluator_state == EvaluatorState::Error){
+                if (evaluator_state == EvaluatorState::Error)
+                {
                     std::string error_line = "undefined line";
 
                     print_error<EvaluatorError>(
                         evaluator.get_current_error(),
                         error_line,
-                        {0, 0}
-                    );
+                        {0, 0});
                 }
             }
 
