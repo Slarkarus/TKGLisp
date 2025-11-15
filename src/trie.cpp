@@ -45,6 +45,11 @@ namespace tkg
             current_node = current_node->next[c].get();
         }
 
+        if (current_node->has_value)
+        {
+            return current_node->current_value;
+        }
+
         return None;
     }
 }
